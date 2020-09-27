@@ -60,7 +60,8 @@ require('uWebSockets.js').App().ws('/*', {
     /* You can do app.publish('sensors/home/temperature', '22C') kind of pub/sub as well */
     let stringy = "";
     try {
-      stringy = String.fromCharCode.apply(null, message)
+      let buffer = Buffer.from(message);
+      stringy = buffer.toString();
       let parsedMessage = JSON.parse(stringy);
 
       if (parsedMessage.topic === "task") {
