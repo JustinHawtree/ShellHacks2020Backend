@@ -41,7 +41,6 @@ require('uWebSockets.js').App().ws('/*', {
   compression: 0,
 
   open: (ws: any, req: any) => {
-    console.log("Req", req);
     console.log("A Websocket connected!");
     ws.subscribe('newTask');
     ws.subscribe('joinTask');
@@ -64,10 +63,16 @@ require('uWebSockets.js').App().ws('/*', {
 
       if (parsedMessage.topic === "task") {
         if (parsedMessage.action === "join") {
+          console.log("Join Task Event!!!");
+          console.log("Message:", parsedMessage.message);
           ws.publish('joinTask', parsedMessage.message);
         } else if (parsedMessage.action === "leave") {
+          console.log("Leave Task Event!!!");
+          console.log("Message:", parsedMessage.message)
           ws.publish('leaveTask', parsedMessage.message);
         } else if (parsedMessage.action === "new") {
+          console.log("New Task Event!!!");
+          console.log("Message:", parsedMessage.message);
           ws.publish('newTask', parsedMessage.message);
         }
       }
