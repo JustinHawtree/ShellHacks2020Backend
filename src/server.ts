@@ -58,8 +58,10 @@ require('uWebSockets.js').App().ws('/*', {
   /* For brevity we skip the other events (upgrade, open, ping, pong, close) */
   message: (ws: any, message: number[], isBinary: any) => {
     /* You can do app.publish('sensors/home/temperature', '22C') kind of pub/sub as well */
+    let stringy = "";
     try {
-      let parsedMessage = JSON.parse(String.fromCharCode.apply(null, message));
+      stringy = String.fromCharCode.apply(null, message)
+      let parsedMessage = JSON.parse(stringy);
 
       if (parsedMessage.topic === "task") {
         if (parsedMessage.action === "join") {
@@ -78,7 +80,7 @@ require('uWebSockets.js').App().ws('/*', {
       }
     } catch (error) {
       console.log("Websocket: not valid json message", error);
-      console.log("Websocket: Message:", message);
+      console.log("Websocket: Message:", stringy);
       return;
     }
 
