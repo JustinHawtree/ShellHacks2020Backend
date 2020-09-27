@@ -19,8 +19,22 @@ eventRouter.get("/volunteer/:id", async (req: Request, res: Response) => {
     const event: Event = await EventService.find_event_with_volunteer_code(id);
     const areas: Array<Area> = await find_all_with_event_id(event.id);
     const tasks: Array<Task> = await find_all_event_id(event.id);
+
+    let areaObj:any = {};
+    areas.forEach((area: any) => {
+      area["volunteer_limit"] = 0;
+      area["current_volunteers"] = 0;
+      area["tasks"] = [];
+      areaObj[area.id] = area;
+    })
+
+    tasks.forEach((task: any) => {
+      areaObj[task.area_id]["tasks"].push(task);
+      areaObj[task.area_id]["volunteer_limit"] = areaObj[task.area_id]["volunteer_limit"] + task.volunteer_limit;
+      areaObj[task.area_id]["current_volunteers"] = areaObj[task.area_id]["current_volunteers"] + task.current_volunteers;
+    })
   
-    res.status(200).send({ event, areas, tasks });
+    res.status(200).send({ event, "areas": Object.values(areas) });
   } catch (error) {
     console.error(error.message);
     res.sendStatus(400);

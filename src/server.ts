@@ -25,5 +25,40 @@ app.listen(PORT, (err: any) => {
   } else {
     console.log(`Listening on Port ${PORT}`);
   }
-})
+});
+
+
+
+require('uWebSockets.js').App().ws('/*', {
+  // Websocket Settings
+  idleTimeout: 30,
+  maxBackpressure: 1024,
+  maxPayloadLength: 512,
+  compression: 0,
+
+  open: (ws: any) => {
+    console.log("A Websocket connected!");
+  },
+
+  
+
+  /* For brevity we skip the other events (upgrade, open, ping, pong, close) */
+  message: (ws: any, message: any, isBinary: any) => {
+    /* You can do app.publish('sensors/home/temperature', '22C') kind of pub/sub as well */
+    
+    /* Here we echo the message back, using compression if available */
+    let ok = ws.send(message, isBinary, true);
+  },
+
+  close: (ws: any, code: any, message: any) => {
+    console.log("WebSocket Closed");
+  }
+  
+}).listen(3002, (listenSocket: any) => {
+
+  if (listenSocket) {
+    console.log('WebSocket Server Listening to port 3002');
+  }
+  
+});
 
