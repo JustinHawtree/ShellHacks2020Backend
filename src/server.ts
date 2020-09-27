@@ -68,15 +68,15 @@ require('uWebSockets.js').App().ws('/*', {
         if (parsedMessage.action === "join") {
           console.log("Join Task Event!!!");
           console.log("Message:", parsedMessage.message);
-          ws.publish('joinTask', parsedMessage.message);
+          ws.publish('joinTask', JSON.stringify(parsedMessage.message));
         } else if (parsedMessage.action === "leave") {
           console.log("Leave Task Event!!!");
           console.log("Message:", parsedMessage.message)
-          ws.publish('leaveTask', parsedMessage.message);
+          ws.publish('leaveTask', JSON.stringify(parsedMessage.message));
         } else if (parsedMessage.action === "new") {
           console.log("New Task Event!!!");
           console.log("Message:", parsedMessage.message);
-          ws.publish('newTask', parsedMessage.message);
+          ws.publish('newTask', JSON.stringify(parsedMessage.message));
         }
       }
     } catch (error) {
