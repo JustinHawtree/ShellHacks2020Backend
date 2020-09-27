@@ -2,6 +2,7 @@
 const express = require("express");
 const app = express();
 const bodyParser = require("body-parser");
+const cors = require('cors');
 const PORT = process.env.PORT || 3001;
 
 import { eventRouter } from "./controllers/event.controller";
@@ -13,6 +14,9 @@ app.use(bodyParser.urlencoded({
   extended: true
 }));
 app.use(bodyParser.json());
+app.use(cors({
+  origin: ['http://localhost:3000', 'http://localhost:3001']
+}))
 
 
 app.use("/event", eventRouter);
@@ -36,7 +40,8 @@ require('uWebSockets.js').App().ws('/*', {
   maxPayloadLength: 512,
   compression: 0,
 
-  open: (ws: any) => {
+  open: (ws: any, req: any) => {
+    console.log("Req", req);
     console.log("A Websocket connected!");
   },
 
