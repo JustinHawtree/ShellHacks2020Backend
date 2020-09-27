@@ -43,6 +43,9 @@ require('uWebSockets.js').App().ws('/*', {
   open: (ws: any, req: any) => {
     console.log("Req", req);
     console.log("A Websocket connected!");
+    ws.subscribe('newTask');
+    ws.subscribe('joinTask');
+    ws.subscribe('leaveTask');
   },
 
   // Remove a task?
@@ -56,7 +59,23 @@ require('uWebSockets.js').App().ws('/*', {
   /* For brevity we skip the other events (upgrade, open, ping, pong, close) */
   message: (ws: any, message: any, isBinary: any) => {
     /* You can do app.publish('sensors/home/temperature', '22C') kind of pub/sub as well */
-    
+    try {
+      let parsedMessage = JSON.parse(message);
+
+      if (parsedMessage.topic === "task") {
+        if (parsedMessage.action === "join") {
+          ws.publish('joinTask', parsedMessage.message);
+        } else if (parsedMessage.action === "leave") {
+          ws.publish('leaveTask', parsedMessage.message);
+        } else if (parsedMessage.action === "new") {
+          ws.publish('newTask', parsedMessage.message);
+        }
+      }
+    } catch (error) {
+      console.log("Websocket: not valid json message", message);
+      return;
+    }
+
     /* Here we echo the message back, using compression if available */
     let ok = ws.send(message, isBinary, true);
   },
