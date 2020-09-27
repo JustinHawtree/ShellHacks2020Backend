@@ -56,11 +56,10 @@ require('uWebSockets.js').App().ws('/*', {
   // Leave a task
 
   /* For brevity we skip the other events (upgrade, open, ping, pong, close) */
-  message: (ws: any, message: any, isBinary: any) => {
+  message: (ws: any, message: number[], isBinary: any) => {
     /* You can do app.publish('sensors/home/temperature', '22C') kind of pub/sub as well */
     try {
-      let messageString: string = new TextDecoder().decode(message);
-      let parsedMessage = JSON.parse(messageString);
+      let parsedMessage = JSON.parse(String.fromCharCode.apply(null, message));
 
       if (parsedMessage.topic === "task") {
         if (parsedMessage.action === "join") {
