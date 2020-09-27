@@ -77,7 +77,8 @@ require('uWebSockets.js').App().ws('/*', {
         }
       }
     } catch (error) {
-      console.log("Websocket: not valid json message", message);
+      console.log("Websocket: not valid json message", error);
+      console.log("Websocket: Message:", message);
       return;
     }
 
