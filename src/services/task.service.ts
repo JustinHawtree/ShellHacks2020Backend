@@ -1,5 +1,5 @@
 import { Task } from '../data/task.interface';
-import { pool } from '../data/database.pool';
+import { pool } from './database.pool';
 
 
 function makeTaskObj(id: number, name: string, description: string, volunteer_limit: number, current_volunteers: number,
@@ -16,7 +16,13 @@ export const find = async (task_id: number): Promise<Task> => {
   try {
     
     client = await pool.connect();
-    let sqlResult = await client.query(sql, values).rows[0];
+    let sqlResult = await client.query(sql, values);
+
+    if (sqlResult.rows.length === 0) {
+      throw new Error("Invalid task_id: "+task_id+" for Find single Area");
+    } else {
+      sqlResult = sqlResult.rows[0];
+    }
 
     task = makeTaskObj(sqlResult.task_id, sqlResult.task_name, sqlResult.description, sqlResult.volunteer_limit,
       sqlResult.current_volunteers, sqlResult.task_location, sqlResult.start_time, sqlResult.end_time, sqlResult.area_id);
@@ -45,7 +51,7 @@ export const find_all_area_id = async (area_id: number): Promise<Array<Task>> =>
     let sqlResult = await client.query(sql, values);
 
     if (sqlResult.rows.length === 0) {
-      throw new Error("Invalid area_id for Find all tasks by area_id");
+      return [];
     }
 
     tasks = sqlResult.rows.map((task: any) => 
@@ -74,7 +80,7 @@ export const find_all_event_id = async (event_id: number): Promise<Array<Task>> 
                ON ET.event_id = $1
                INNER JOIN area AR
                ON AR.event_id = ET.event_id
-               WHERE TK.area_id = AR.event_id`;
+               WHERE TK.area_id = AR.area_id`;
 
   const values: Array<any> = [event_id];
   try {
@@ -83,7 +89,7 @@ export const find_all_event_id = async (event_id: number): Promise<Array<Task>> 
     let sqlResult = await client.query(sql, values);
 
     if (sqlResult.rows.length === 0) {
-      throw new Error("Invalid event_id for Find all tasks by event_id");
+      return [];
     }
 
     tasks = sqlResult.rows.map((task: any) => 
@@ -104,19 +110,21 @@ export const find_all_event_id = async (event_id: number): Promise<Array<Task>> 
 }
 
 
-export const create = async (new_task: Task): Promise<void> => {
+export const create = async (new_task: Task): Promise<number> => {
   let client;
-  const sql = `INSERT INTO event (task_name, description, volunteer_limit, current_volunteers, task_location, start_time, end_time, area_id)
-               VALUES ($1, $2, $3, $4, $5, $6. $7, $8)`;
+  const sql = `INSERT INTO task (task_name, description, volunteer_limit, task_location, start_time, end_time, area_id)
+               VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING task_id`;
 
-  const values: Array<any> = [new_task.name, new_task.description, new_task.volunteer_limit, new_task.current_volunteers, new_task.task_location,
+  const values: Array<any> = [new_task.name, new_task.description, new_task.volunteer_limit, new_task.task_location,
                               new_task.start_time, new_task.end_time, new_task.area_id];
   try {
     
     client = await pool.connect();
-    await client.query(sql, values);
+    let task = await client.query(sql, values);
 
     client.release();
+    return task.rows[0].task_id;
+
   } catch (error) {
 
     if (client) client.release();

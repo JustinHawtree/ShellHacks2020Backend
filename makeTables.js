@@ -45,7 +45,7 @@ const preparedSQL = [
       current_volunteers INT DEFAULT 0 NOT NULL,
       task_location VARCHAR(50) NOT NULL,
       start_time TIMESTAMP,
-      end_time TIMESTAMP
+      end_time TIMESTAMP,
       area_id INT NOT NULL,
       FOREIGN KEY (area_id) REFERENCES area (area_id),
       PRIMARY KEY(task_id)

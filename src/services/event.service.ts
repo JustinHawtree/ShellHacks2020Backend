@@ -1,5 +1,6 @@
 import { Event } from '../data/event.interface';
-import { pool } from '../data/database.pool';
+import { pool } from './database.pool';
+
 const crypto = require('crypto');
 const base64url = require('base64url');
 
@@ -9,10 +10,10 @@ function makeEventObj(id: number, name: string, location: string, email: string,
 }
 
 
-export const find_event_with_volunteer_code = async (volunteer_access_code: number): Promise<Event> => {
+export const find_event_with_volunteer_code = async (volunteer_access_code: string): Promise<Event> => {
   let client;
   let event: Event;
-  const sql = `SELECT * FROM event WHERE volunteer_access_code = $1`;
+  const sql = `SELECT event_id, event_name, event_location, start_time, end_time FROM event WHERE volunteer_access_code = $1`;
   const values: Array<any> = [volunteer_access_code];
   try {
     
@@ -27,6 +28,7 @@ export const find_event_with_volunteer_code = async (volunteer_access_code: numb
 
     event = makeEventObj(sqlResult.event_id, sqlResult.event_name, sqlResult.event_location, sqlResult.email,
       sqlResult.start_time, sqlResult.end_time, sqlResult.volunteer_access_code, sqlResult.coordinator_access_code);
+
     
     client.release();
     return event;
@@ -40,10 +42,11 @@ export const find_event_with_volunteer_code = async (volunteer_access_code: numb
   }
 }
 
-export const find_event_with_coordinator_code = async (coordinator_access_code: number): Promise<Event> => {
+
+export const find_event_with_coordinator_code = async (coordinator_access_code: string): Promise<Event> => {
   let client;
   let event: Event;
-  const sql = `SELECT * FROM event WHERE coordinator_access_code = $1`;
+  const sql = `SELECT event_id, event_name, event_location, start_time, end_time FROM event WHERE coordinator_access_code = $1`;
   const values: Array<any> = [coordinator_access_code];
   try {
     
@@ -72,10 +75,11 @@ export const find_event_with_coordinator_code = async (coordinator_access_code: 
   }
 }
 
-export const create = async (new_event: Event): Promise<void> => {
+
+export const create = async (new_event: Event): Promise<Object> => {
   let client;
   const sql = `INSERT INTO event (event_name, event_location, email, start_time, end_time, volunteer_access_code, coordinator_access_code)
-               VALUES ($1, $2, $3, $4, $5, $6. $7)`;
+               VALUES ($1, $2, $3, $4, $5, $6, $7)`;
   let size = 7;
   let volunteer_access_code = base64url(crypto.randomBytes(size));
   let coordinator_access_code = base64url(crypto.randomBytes(size));
@@ -85,8 +89,8 @@ export const create = async (new_event: Event): Promise<void> => {
     
     client = await pool.connect();
     await client.query(sql, values);
-
     client.release();
+    return {volunteer_access_code, coordinator_access_code}
   } catch (error) {
 
     if (client) client.release();
@@ -122,6 +126,7 @@ export const update = async (updated_event: Event): Promise<void> => {
 
   }
 }
+
 
 export const remove = async (event_id: number): Promise<void> => {
   let client;

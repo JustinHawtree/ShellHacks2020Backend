@@ -1,5 +1,5 @@
 import { Area } from '../data/area.interface';
-import { pool } from '../data/database.pool';
+import { pool } from './database.pool';
 
 
 function makeAreaObj(id: number, name: string, eventID: number): Area {
@@ -31,7 +31,7 @@ export const find = async (area_id: number): Promise<Area> => {
   } catch (error) {
 
     if (client) client.release();
-    console.log("Post Event Error:", error);
+    console.log("Post Area Error:", error);
     throw new Error("Find Area Error");
 
   }
@@ -49,7 +49,7 @@ export const find_all_with_event_id = async (event_id: number): Promise<Array<Ar
     let sqlResult = await client.query(sql, values);
 
     if (sqlResult.rows.length === 0) {
-      throw new Error("Invalid event_id for Find Areas");
+      return [];
     }
 
     areas = sqlResult.rows.map((area: any) => 
@@ -62,25 +62,27 @@ export const find_all_with_event_id = async (event_id: number): Promise<Array<Ar
   } catch (error) {
 
     if (client) client.release();
-    console.log("Post Event Error:", error);
+    console.log("Post Area Error:", error);
     throw new Error("Find Area Error");
 
   }
 }
 
 
-export const create = async (new_area: Area): Promise<void> => {
+export const create = async (new_area: Area): Promise<number> => {
   let client;
-  const sql = `INSERT INTO event (area_name, event_id)
-               VALUES ($1, $2)`;
+  const sql = `INSERT INTO area (area_name, event_id)
+               VALUES ($1, $2) RETURNING area_id`;
 
   const values: Array<any> = [new_area.name, new_area.eventID];
   try {
     
     client = await pool.connect();
-    await client.query(sql, values);
+    let area = await client.query(sql, values);
 
     client.release();
+    return area.rows[0].area_id;
+
   } catch (error) {
 
     if (client) client.release();
@@ -88,7 +90,7 @@ export const create = async (new_area: Area): Promise<void> => {
     if (error.code === '23505') {
       console.log("error.constraint:", error.constraint);
     }
-    throw new Error("Create Event Error");
+    throw new Error("Create Area Error");
 
   }
 }
