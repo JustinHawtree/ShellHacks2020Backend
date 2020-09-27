@@ -13,7 +13,7 @@ function makeEventObj(id: number, name: string, location: string, email: string,
 export const find_event_with_volunteer_code = async (volunteer_access_code: string): Promise<Event> => {
   let client;
   let event: Event;
-  const sql = `SELECT event_id, event_name, event_location, start_time, end_time FROM event WHERE volunteer_access_code = $1`;
+  const sql = `SELECT event_id, event_name, event_location, event_start_time, event_end_time FROM event WHERE volunteer_access_code = $1`;
   const values: Array<any> = [volunteer_access_code];
   try {
     
@@ -27,7 +27,7 @@ export const find_event_with_volunteer_code = async (volunteer_access_code: stri
     }
 
     event = makeEventObj(sqlResult.event_id, sqlResult.event_name, sqlResult.event_location, sqlResult.email,
-      sqlResult.start_time, sqlResult.end_time, sqlResult.volunteer_access_code, sqlResult.coordinator_access_code);
+      sqlResult.event_start_time, sqlResult.event_end_time, sqlResult.volunteer_access_code, sqlResult.coordinator_access_code);
 
     
     client.release();
@@ -46,7 +46,7 @@ export const find_event_with_volunteer_code = async (volunteer_access_code: stri
 export const find_event_with_coordinator_code = async (coordinator_access_code: string): Promise<Event> => {
   let client;
   let event: Event;
-  const sql = `SELECT event_id, event_name, event_location, start_time, end_time FROM event WHERE coordinator_access_code = $1`;
+  const sql = `SELECT event_id, event_name, event_location, event_start_time, event_end_time FROM event WHERE coordinator_access_code = $1`;
   const values: Array<any> = [coordinator_access_code];
   try {
     
@@ -61,7 +61,7 @@ export const find_event_with_coordinator_code = async (coordinator_access_code: 
 
 
     event = makeEventObj(sqlResult.event_id, sqlResult.event_name, sqlResult.event_location, sqlResult.email,
-      sqlResult.start_time, sqlResult.end_time, sqlResult.volunteer_access_code, sqlResult.coordinator_access_code);
+      sqlResult.event_start_time, sqlResult.event_end_time, sqlResult.volunteer_access_code, sqlResult.coordinator_access_code);
 
     client.release();
     return event;
@@ -78,7 +78,7 @@ export const find_event_with_coordinator_code = async (coordinator_access_code: 
 
 export const create = async (new_event: Event): Promise<Object> => {
   let client;
-  const sql = `INSERT INTO event (event_name, event_location, email, start_time, end_time, volunteer_access_code, coordinator_access_code)
+  const sql = `INSERT INTO event (event_name, event_location, email, event_start_time, event_end_time, volunteer_access_code, coordinator_access_code)
                VALUES ($1, $2, $3, $4, $5, $6, $7)`;
   let size = 7;
   let volunteer_access_code = base64url(crypto.randomBytes(size));
@@ -106,7 +106,7 @@ export const create = async (new_event: Event): Promise<Object> => {
 
 export const update = async (updated_event: Event): Promise<void> => {
   let client;
-  const sql = `UPDATE event SET event_name = $1, event_location = $2, email = $3, start_time = $4, end_time = $5,
+  const sql = `UPDATE event SET event_name = $1, event_location = $2, email = $3, event_start_time = $4, event_end_time = $5,
                volunteer_access_code = $6, coordinator_access_code = $7)
                WHERE event_id = $8`;
 
