@@ -59,7 +59,8 @@ require('uWebSockets.js').App().ws('/*', {
   message: (ws: any, message: any, isBinary: any) => {
     /* You can do app.publish('sensors/home/temperature', '22C') kind of pub/sub as well */
     try {
-      let parsedMessage = JSON.parse(message);
+      let messageString: string = new TextDecoder().decode(message);
+      let parsedMessage = JSON.parse(messageString);
 
       if (parsedMessage.topic === "task") {
         if (parsedMessage.action === "join") {
