@@ -5,6 +5,11 @@
   "main": "server.js",
   "author": "L&J",
   "license": "MIT",
+  "scripts": {
+    "build": "yarn tsc -p . && cp ./.env ./build/services",
+    "start": "node ./build/server.js",
+    "go": "yarn build && yarn start"
+  },
   "dependencies": {
     "base64url": "^3.0.1",
     "dotenv": "^8.2.0",
