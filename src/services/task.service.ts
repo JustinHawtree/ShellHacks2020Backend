@@ -12,7 +12,7 @@ export const find = async (task_id: number): Promise<Task> => {
   let client;
   let task: Task;
   const sql = `SELECT * FROM task WHERE task_id = $1`;
-  const values: Array<any> = [task_id];
+  let values: Array<any> = [task_id];
   try {
     
     client = await pool.connect();
@@ -82,7 +82,7 @@ export const find_all_event_id = async (event_id: number): Promise<Array<Task>> 
                ON AR.event_id = ET.event_id
                WHERE TK.area_id = AR.area_id`;
 
-  const values: Array<any> = [event_id];
+  let values: Array<any> = [event_id];
   try {
     
     client = await pool.connect();
@@ -112,10 +112,10 @@ export const find_all_event_id = async (event_id: number): Promise<Array<Task>> 
 
 export const create = async (new_task: Task): Promise<number> => {
   let client;
-  const sql = `INSERT INTO task (task_name, description, volunteer_limit, task_location, start_time, end_time, area_id)
+  let sql = `INSERT INTO task (task_name, description, volunteer_limit, task_location, start_time, end_time, area_id)
                VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING task_id`;
 
-  const values: Array<any> = [new_task.name, new_task.description, new_task.volunteer_limit, new_task.task_location,
+  let values: Array<any> = [new_task.name, new_task.description, new_task.volunteer_limit, new_task.task_location,
                               new_task.start_time, new_task.end_time, new_task.area_id];
   try {
     
@@ -144,7 +144,7 @@ export const update = async (updated_task: Task): Promise<void> => {
                 task_location = $5, start_time = $6, end_time = $7, area_id = $8)
                WHERE task_id = $9`;
 
-  const values: Array<any> = [updated_task.name, updated_task.description, updated_task.volunteer_limit, updated_task.current_volunteers, updated_task.task_location,
+  let values: Array<any> = [updated_task.name, updated_task.description, updated_task.volunteer_limit, updated_task.current_volunteers, updated_task.task_location,
                               updated_task.start_time, updated_task.end_time, updated_task.area_id, updated_task.id];
   try {
     
@@ -166,7 +166,7 @@ export const remove = async (task_id: number): Promise<void> => {
   let client;
   const sql = `DELETE FROM task WHERE task_id = $1`;
 
-  const values: Array<any> = [task_id];
+  let values: Array<any> = [task_id];
   try {
     
     client = await pool.connect();

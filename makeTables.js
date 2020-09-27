@@ -22,8 +22,8 @@ const preparedSQL = [
       event_name VARCHAR(50) NOT NULL,
       event_location VARCHAR(50) NOT NULL,
       email VARCHAR(50) NOT NULL,
-      start_time TIMESTAMP NOT NULL,
-      end_time TIMESTAMP NOT NULL,
+      event_start_time TIMESTAMP NOT NULL,
+      event_end_time TIMESTAMP NOT NULL,
       volunteer_access_code VARCHAR(10) UNIQUE NOT NULL,
       coordinator_access_code VARCHAR(10) UNIQUE NOT NULL,
       PRIMARY KEY(event_id)

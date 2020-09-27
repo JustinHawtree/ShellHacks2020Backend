@@ -40,7 +40,13 @@ require('uWebSockets.js').App().ws('/*', {
     console.log("A Websocket connected!");
   },
 
-  
+  // Remove a task?
+
+  // Create a new area
+  // Create a new task
+  // Complete a task
+  // Join a task
+  // Leave a task
 
   /* For brevity we skip the other events (upgrade, open, ping, pong, close) */
   message: (ws: any, message: any, isBinary: any) => {
