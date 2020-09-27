@@ -86,7 +86,7 @@ require('uWebSockets.js').App().ws('/*', {
     }
 
     /* Here we echo the message back, using compression if available */
-    let ok = ws.send(message, isBinary, true);
+    // let ok = ws.send(message, isBinary, true);
   },
 
   close: (ws: any, code: any, message: any) => {
