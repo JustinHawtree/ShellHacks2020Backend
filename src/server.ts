@@ -35,7 +35,7 @@ app.listen(PORT, (err: any) => {
 
 require('uWebSockets.js').App().ws('/*', {
   // Websocket Settings
-  idleTimeout: 30,
+  idleTimeout: 300,
   maxBackpressure: 1024,
   maxPayloadLength: 512,
   compression: 0,
